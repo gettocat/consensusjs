@@ -1,16 +1,19 @@
 {
-    "name": "friday-consensus",
+    "name": "consensusjs",
     "version": "0.0.1",
-    "description": "Consensus abstract package",
+    "description": "Consensus module for applications",
     "main": "index.js",
-    "repository": "https://github.com/gettocat/friday-consensus",
-    "homepage": "https://github.com/gettocat/friday-consensus",
+    "repository": "https://github.com/gettocat/consensusjs",
+    "homepage": "https://github.com/gettocat/consensusjs",
     "keywords": [
         "consensus",
         "pow",
         "pos",
         "proofofwork",
-        "proofofstake"
+        "proofofstake",
+        "delegates",
+        "dpow",
+        "dpos"
     ],
     "dependencies": {
         "bn.js": "^4.11.8",

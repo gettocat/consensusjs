@@ -13,9 +13,6 @@ module.exports = function (app) {
                 throw new Error('Centralized consensus must have mainNode parameter with key of main node.');
 
         }
-        isPeerCanSendData(peer) {
-            return true;//emit can everyone
-        }
         isDataMatch(data, peer) {
             if (this.getConfig('delegateMode')) {//new block can emit more then 1 node:
                 return this.getConfig('delegates').indexOf(data.getKey()) >= 0 || data.isDelegateMessage();

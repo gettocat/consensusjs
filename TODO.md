@@ -1,2 +1,2 @@
 - orphan blocks
-- hard form implementation
+- hard fork implementation

@@ -1,0 +1,27 @@
+{
+    "name": "friday-consensus",
+    "version": "0.0.1",
+    "description": "Consensus abstract package",
+    "main": "index.js",
+    "repository": "https://github.com/gettocat/friday-consensus",
+    "homepage": "https://github.com/gettocat/friday-consensus",
+    "keywords": [
+        "consensus",
+        "pow",
+        "pos",
+        "proofofwork",
+        "proofofstake"
+    ],
+    "dependencies": {
+        "bn.js": "^4.11.8",
+        "sha3": "^2.0.4"
+    },
+    "author": {
+        "name": "Nanocat <gettocat@github.com>",
+        "email": "alex@letris.ru"
+    },
+    "license": "MIT",
+    "devDependencies": {
+        "mocha": "^5.2.0"
+    }
+}

@@ -1,2 +1,1 @@
-- orphan blocks
-- hard fork implementation
+- event implementation (add block, change branch, invalid block etc..)

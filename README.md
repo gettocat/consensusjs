@@ -343,7 +343,7 @@ Only one node, defined in config - can send new blocks to chain. If `config.dele
 Block to network can send everyone, who have hashrate and can mine blocks
 
 ### pos
-Extending pow config and use mining for search new blocks, but if user have stakeValue (bigger percent of coins), he can reduse up to 10% from target and make faster hash searching.
+Extending pow config and use mining for search new blocks, but if user have stakeValue (bigger percent of coins), he can reduse up to 10% from target and make faster hash searching. Have new method in implementation:
 
 ```js
 class ProofOfStakeConsensus extends app.CONSENSUS.ProofOfWorkConsensus {

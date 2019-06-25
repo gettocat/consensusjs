@@ -104,7 +104,9 @@ class APP extends EventEmitter {
                 "maxtarget": 1, //min difficulty
                 "excludeFirst": 1, //dont use this numbers blocks in calculation of new target 
                 "diffWindow": 120, //window of data, used for target
-                "diffCut": 6
+                "diffCut": 6,
+                "changeBranchDelay": 0,//The number of blocks that we ignore when sidechain length is bigger then main chain,
+                "removeOrphanCount": 100,// the number of blocks after which we remove the old blocks from the lost ones
             },
             'pos': {
                 'extends': 'pow',//extending config params from pow section

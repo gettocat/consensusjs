@@ -26,5 +26,8 @@
     "license": "MIT",
     "devDependencies": {
         "mocha": "^5.2.0"
+    },
+    "bugs": {
+        "url": "https://github.com/gettocat/consensusjs/issues"
     }
 }

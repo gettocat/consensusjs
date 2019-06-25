@@ -1,6 +1,6 @@
 {
     "name": "consensusjs",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Consensus module for applications",
     "main": "index.js",
     "repository": "https://github.com/gettocat/consensusjs",
@@ -26,5 +26,8 @@
     "license": "MIT",
     "devDependencies": {
         "mocha": "^5.2.0"
+    },
+    "bugs": {
+        "url": "https://github.com/gettocat/consensusjs/issues"
     }
 }

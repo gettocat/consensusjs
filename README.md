@@ -55,7 +55,9 @@ class Data extends app.MODULE {
     static getPrevIdFieldName();//get field name prev block id from message
     static getTimeFieldName();//get block time field name
     static getBitsFieldName()//get bits filed name
+    static getVersionFieldName()//get version filed name
     getId();//get data id value (hash)
+    getVersion();//get version of block
     getBits();//get bits value
     getPrevId();//get prevblock hash value
     getKey();//get public key of block (used for pos consensus, need sign coinbase block too)
@@ -118,6 +120,8 @@ class AbstractConsensus extends app.MODULE {
      */
     isDelegateMode();
     checkHash(hash, target);//Check that hash is valid for this target
+    inConsensusVersionRange(data);//check validity of block for version and forks
+    getForks();//gets forks config for consensus
 }
 ```
 

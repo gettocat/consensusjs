@@ -84,6 +84,12 @@ class DataMapper extends app.MODULE {
     getTopInfo();//get blockchain top info
     isDataLinked(data);//Verify data-linking to chain. Check previd and search it in blockchain
     getGenesis();//get genesis section from config
+    getSideList();//get side chain list
+    getSideData(id);//get data from sidechain
+    getOrphanList();//get orphan chain list
+    getOrphanData(id);//get data from orphan chain
+    seekBlockNetwork(id);//request block from network (for orphan block parent), MUST be implemented in your code
+    inMainChainData(id);//check block for contains in main chain
 }
 ```
 
@@ -273,7 +279,9 @@ getDefaultConfig() {
             "maxtarget": 1, //min difficulty
             "excludeFirst": 1, //dont use this numbers blocks in calculation of new target 
             "diffWindow": 120, //window of data, used for target
-            "diffCut": 6
+            "diffCut": 6,
+            "changeBranchDelay": 0,//The number of blocks that we ignore when sidechain length is bigger then main chain,
+            "removeOrphanCount": 100,// the number of blocks after which we remove the old blocks from the lost ones
         },
         'pos': {
             'extends': 'pow',//extending config params from pow section

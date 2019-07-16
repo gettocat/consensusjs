@@ -375,3 +375,75 @@ Same as pow, but only defined in `config.delegates` publicKeys can send new bloc
 
 ### dpos
 Same pos and dpow implementation.
+
+
+
+## app.Events
+
+List of events: 
+
+* app.config
+* app.peermanager
+* app.datamanager
+* app.selected_consensus
+* app.consensus.create
+* app.consensus.init
+* app.data.seek
+* app.data.chainchain
+* app.data.new
+* app.data{someDataId}
+* app.data.tx{someTxId}
+* app.data.removeOld
+  
+
+ ###  app.config
+ Config inited, with 1 parameter - `config`
+
+ ### app.peermanager
+ PeerManager loaded
+
+ ### app.datamanager
+ DataManager loaded
+
+ ### app.selected_consensus
+ Consensus selected (before creation), with 1 parameter `consensus_name`
+
+ ### app.consensus.create
+ After creation of consensus, params:
+ `data.config` config of consensus (with extended fields)
+ `data.name` - name of consensus 
+ `data.field` - config field of consensus
+
+ ### app.consensus.init
+After initialization of consensus, params:
+`data.id` - hash of top block after init
+`data.height` - height of storage
+
+### app.data.seek
+Try to search data in network, local storages dont have dataId (childs in orphan)
+Param: `dataId`
+
+### app.data.chainchain
+change slice of side chain to main chain, params: 
+`data.items` count of tree items
+`data.data` (app.DATA object), change from tree 
+`data.oldheight` old height
+`data.newheight` new height
+`data.nowInMain` now in main (arr with dataId items, replaced to main chain)
+
+### app.data.new
+`data.dataId` id of data
+`data.chain` (main|side|orphan)
+`data.height` added only if chain = main
+
+### app.data{someDataId}
+emit this event when dataId added in main chain
+
+### app.data.tx{someTxId}
+emit this event when data with txId added in main chain
+
+### app.data.removeOld
+emited when remove old data from side/orphan 
+`data.chain`  side|orphan
+`data.dataId`  data id
+`data.delta`  seconds timeout of data

@@ -51,10 +51,15 @@ class APP extends EventEmitter {
         this.CONSENSUS = man;
     }
     start(consensus) {
+
+        this.emit("app.config", this.config);
+
         if (!this.peerManager)
             this.peerManager = new this.PEERMANAGER();
+        this.emit("app.peermanager");
         if (!this.dataManager)
             this.dataManager = new this.DATAMANAGER();
+        this.emit("app.datamanager");
 
         //if (!this.config.algorithm)
         //    throw new Error('Algorithm of consensus must be defined');
@@ -89,6 +94,7 @@ class APP extends EventEmitter {
         }
 
         this.consensus_name = this.consensus.consensus_config_field;
+        this.emit("app.selected_consensus", this.consensus_name);
         this.consensus.init();
     }
 

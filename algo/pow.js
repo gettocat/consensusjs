@@ -36,13 +36,13 @@ module.exports = function (app) {
         next_network_target(height) {
             let last = app.dataManager.getTopInfo();
 
-            if (last.height < this.getConfig('premine'))
+            if (last.height < this.getConfig('premine') || !isFinite(last.height))
                 return this.getConfig('maxtarget');
 
             let range = this.getWindowRange(height);
             let list = app.dataManager.getDataSlice(range[0], range[1]);//top block on top in list[0]
 
-            if (!list.length || last.height == 0 || !isFinite(last.height))//genesis check
+            if (!list.length || last.height == 0)//genesis check
                 return this.getConfig('maxtarget')
 
             let difficulties = [], timestamps = [];

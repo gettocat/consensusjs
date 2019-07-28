@@ -97,7 +97,9 @@ class APP extends EventEmitter {
         this.emit("app.selected_consensus", this.consensus_name);
         this.consensus.init();
     }
-
+    getConsensus(){
+        return this.consensus;
+    }
     getDefaultConfig() {
         return {
             'centralized': {

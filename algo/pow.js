@@ -42,7 +42,7 @@ module.exports = function (app) {
             let range = this.getWindowRange(height);
             let list = app.dataManager.getDataSlice(range[0], range[1]);//top block on top in list[0]
 
-            if (!list.length || last.height == 0)//genesis check
+            if (!list.length || last.height == 0 || !isFinite(last.height))//genesis check
                 return this.getConfig('maxtarget')
 
             let difficulties = [], timestamps = [];

@@ -64,15 +64,13 @@ module.exports = function (app) {
             let cut_end;
             let cut_start;
 
-            if (diffWindow >= timestamps.length) {
-                cut_end = diffCut + diffWindow;//dont use 1st block values.
-                if (cut_end < 1)
-                    cut_end = 0;
+            cut_end = timestamps.length - 1 - diffCut;//dont use 1st block values.
+            if (cut_end < 1)
+                cut_end = 0;
+
+            cut_start = cut_end - diffWindow;
+            if (cut_start < 0)
                 cut_start = 0;
-            } else {
-                cut_end = diffCut + diffWindow;//dont use 1st block values.
-                cut_start = diffCut;
-            }
 
             let target_sec = L * this.getConfig('blocktime');
             let times = timestamps.slice(cut_start, cut_end);

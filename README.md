@@ -275,6 +275,7 @@ getDefaultConfig() {
     return {
         'centralized': {
             'mainNode': '',//public key, only this node can emit new blocks, if you need make centralized with more then 1 node - use delegateMode
+            'ignorePrevChilds': true,//ignore childs of prev block when add new block. If this param is false - add new block to side if childs of parent is more then 1
         },
         'pow': {
             "premine": 24,//number of height - when premine will stop
@@ -286,6 +287,7 @@ getDefaultConfig() {
             "diffCut": 6,
             "changeBranchDelay": 0,//The number of blocks that we ignore when sidechain length is bigger then main chain,
             "removeOrphanCount": 100,// the number of blocks after which we remove the old blocks from the lost ones
+            'ignorePrevChilds': true,//ignore childs of prev block when add new block. If this param is false - add new block to side if childs of parent is more then 1
         },
         'pos': {
             'extends': 'pow',//extending config params from pow section

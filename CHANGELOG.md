@@ -52,3 +52,7 @@ New event `chain.changed`, triggered when main chain is changed from side chain 
 
 ## 0.0.1
 Initial commit, core, pow, pos, delegates, dpow, dpos
+
+## 0.0.14
+events
+setting ignorePrevChilds - add new blocks and ignore prev childs (if false - add block to side, if prev childs length > 1)

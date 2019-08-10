@@ -104,6 +104,7 @@ class APP extends EventEmitter {
         return {
             'centralized': {
                 'mainNode': '',//public key, only this node can emit new blocks, if you need make centralized with more then 1 node - use delegateMode
+                'ignorePrevChilds': true,
             },
             'pow': {
                 "premine": 24,//number of height - when premine will stop
@@ -115,6 +116,7 @@ class APP extends EventEmitter {
                 "diffCut": 6,
                 "changeBranchDelay": 0,//The number of blocks that we ignore when sidechain length is bigger then main chain,
                 "removeOrphanCount": 100,// the number of blocks after which we remove the old blocks from the lost ones
+                'ignorePrevChilds': true,
             },
             'pos': {
                 'extends': 'pow',//extending config params from pow section

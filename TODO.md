@@ -1,1 +1,0 @@
-- event implementation (add block, change branch, invalid block etc..)

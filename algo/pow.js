@@ -89,8 +89,7 @@ module.exports = function (app) {
             diffsum -= Math.min.apply(Math, diffs);
             let diffavg = diffsum / (diffs.length - 2);
 
-            let newTarget = (target_sec * diffavg) / time_span
-            return newTarget;
+            return Math.ceil((target_sec * diffavg) / time_span);
         }
 
         checkHash(hash, target) {

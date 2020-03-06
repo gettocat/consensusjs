@@ -432,7 +432,16 @@ Same as pow, but only defined in `config.delegates` publicKeys can send new bloc
 ### dpos
 Same pos and dpow implementation.
 
+### ddpos
+Essence of this consensus comes down to the Round Robin procedure. The network goes rounds of adding blocks. A general list of validators is set, and at the beginning of each round, a list of active validators for a given round is selected by sorting by the parameters of the total number of coins in delegation and the priority described below. The number of validators active for a round is set by the validatorCount parameter.
 
+At the beginning of the round, a cursor is formed that defines the active validator, which, and only that has the right to generate a block and add it to the network at the moment. After successfully adding a block, the cursor moves to the next validator in the list of active ones until the round ends. After this, the procedure of creating a new round is repeated, by selecting new active validators and moving the cursor to position 0. In the network, you can set a pause for blocks, using the pause parameter (in seconds), at which the block will not be added to the network if the time is between the new and previous block less than that number of seconds.
+
+If the active validator with the cursor does not manage to place the block on the network at the timeout specified by the parameter (in seconds), the cursor moves to the next validator, and it must change the information about the previous validator and add it to the network on its behalf, decreasing the priority parameter by 1.
+
+On the contrary, if the previous validator published the block to the network at the right time and without errors, the next validator should increase the priority parameter by 1 if the parameter is less than zero.
+
+If the total number of validators in the network is less than the staticDelegatesLimit parameter, the network switches to staticDelegates mode, i.e. only validators can publish blocks with public keys described in the delegates array parameter.
 
 ## app.Events
 

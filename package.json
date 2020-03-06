@@ -1,6 +1,6 @@
 {
     "name": "consensusjs",
-    "version": "0.0.15",
+    "version": "0.0.16",
     "description": "Consensus module for applications",
     "main": "index.js",
     "repository": "https://github.com/gettocat/consensusjs",
@@ -17,7 +17,8 @@
     ],
     "dependencies": {
         "bn.js": "^4.11.8",
-        "sha3": "^2.0.4"
+        "sha3": "^2.0.4",
+        "merkle-tools": "^1.4.0"
     },
     "author": {
         "name": "Nanocat <gettocat@github.com>",

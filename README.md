@@ -11,8 +11,10 @@ Have four modules, based on app.MODULE:
 
 - Peer
 - Data
+- Validator
 - PeerManager
 - DataManager
+- RoundManager
 - Consensus
 
 This modules is native and make consensus algorithm. Must be reimplemented, they are *abstract*. 
@@ -32,6 +34,20 @@ class Peer extends app.MODULE {
 }
 ```
 
+### Validator
+Define validator node entry
+
+```js
+class Validator extends app.MODULE {
+    constructor(data);//create new peer
+    getId(); //get validator public key
+    getVolume(); //must implement validator volume 
+    getPriority(); //must implement priority of validator
+    updateVolume(volume); //update validator volume 
+    updatePriority(priority); //update validator priority 
+}
+```
+
 ### PeerManager
 Define Mapper of Peer entries. Storing, sorting, searching, etc...
 
@@ -41,6 +57,28 @@ class PeerMapper extends app.MODULE {
     addPeer(peer);//add peer to list
     removePeerById(peerId);//remove peer by id
     removePeer(peer);//remove Peer
+}
+```
+
+### roundManager
+Define Mapper of proof of stake round
+
+```js
+class RoundMapper extends app.MODULE {
+    getValidatorsList();//sorting active validator list for round
+    check(peer, data);//check data for round consensus
+    checkBlockTime(peer, data);//check block time for round
+    update();//update round info, or start new round
+    decrementPriority();//decrement priority for cursor
+    incrementPriority();//increment priority for cursor
+    getRoundValidators();//get active validators
+    addValidator(publickey, priority, volume);//add validators to list
+    removeValidator(publickey);//remove validators from list
+    validatorCount();//get validator count
+    getValidator(key);//get validator instance `app.VALIDATOR`
+    getCursorId();//get active cursor for round
+    isValidator(key);//check public key for validator
+    isActiveValidator(key);//check public key for active validator
 }
 ```
 
@@ -137,14 +175,19 @@ defineDataClass(man);
 defineDataManagerClass(man);
 setDataManager(man);
 defineConsensusClass(man);
+defineValidatorClass(man);
+defineRoundManagerClass(man);
+setRoundManager(man);
 ```
 
 To redefine class you need create you own class and extends one from default modules:
 
 - app.PEER
 - app.DATA
+- app.VALIDATOR
 - app.PEERMANAGER
 - app.DATAMANAGER
+- app.ROUNDMANAGER
 - app.CONSENSUS
 
 For example we can create new consensus algorithm with another target-hash verify:
@@ -303,6 +346,15 @@ getDefaultConfig() {
             'delegateMode': true,
             'delegates': []//if this param is empty - we can make dynamic delegates
         },
+        'ddpos': {
+            'extends': 'dpos',
+            'validatorCount': 60,
+            'timeout': 60,//timeout in seconds for sending block for validator. If timedout - decrement priority and set cursor to next
+            'staticDelegatesLimit': 5,//enable static delegates from config if connected validator count less then this parameter
+            'delegates': [],//if this param is empty - we can make dynamic delegates
+            "timeout": 60, //max block time after prev block
+            "pause": 20,//min block time after prev block
+        },
         "genesis": { //need to be rediclared on yours config
             "id": 'genesis',
             "prev": -1,
@@ -323,13 +375,15 @@ ConsensusJs have 5 default consensus algoritm:
 - ProofOfStakeConsensus
 - DelegatedProofOfWorkConsensus
 - DelegatedProofOfStakeConsensus
+- DynamicDelegateProofOfStakeConsensus
 
 and config sections:
 - centralized
 - pow
-- pow
+- pos (actually pow+pos)
 - dpow
-- dpos
+- dpos (actually dpos+pos)
+- ddpos
 
 You can extend you own consensus algoritm any default algorithm, for example:
 
@@ -365,7 +419,7 @@ class ProofOfStakeConsensus extends app.CONSENSUS.ProofOfWorkConsensus {
     getStakeToTargetTransform(publicKey, stake, target) {
         //make some algo, to change target, if stakeValue is not null
         //if user have make coins - target must be lower
-        //by default kust decrease diff on 10%, nut we can calculate usercoins/allcoins value, and use this param instead shareStake
+        //by default just decrease diff on 10%, nut we can calculate usercoins/allcoins value, and use this param instead shareStake
         return (stake > 0) ? target * (1 - this.getConfig('shareStake', 0.1)) : target;
     }
     ...
@@ -387,6 +441,7 @@ List of events:
 * app.config
 * app.peermanager
 * app.datamanager
+* app.roundmanager
 * app.selected_consensus
 * app.consensus.create
 * app.consensus.init
@@ -406,6 +461,9 @@ List of events:
 
  ### app.datamanager
  DataManager loaded
+
+ ### app.roundmanager
+ RoundManager loaded
 
  ### app.selected_consensus
  Consensus selected (before creation), with 1 parameter `consensus_name`

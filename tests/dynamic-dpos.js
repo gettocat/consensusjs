@@ -9,10 +9,24 @@ let Stakes = {
     '0x02': { volume: 0, key: '0x02', priority: 0 },
 }
 
+let Stakes2 = {
+    '0x11': { volume: 1000, key: '0x11', priority: 0 },
+    '0x12': { volume: 100, key: '0x12', priority: 0 },
+    '0x13': { volume: 0, key: '0x13', priority: 0 },
+    '0x14': { volume: 0, key: '0x14', priority: 0 },
+    '0x15': { volume: 0, key: '0x15', priority: 0 },
+    '0x16': { volume: 0, key: '0x16', priority: 0 },
+    '0x17': { volume: 0, key: '0x17', priority: 0 },
+    '0x18': { volume: 0, key: '0x18', priority: 0 },
+    '0x19': { volume: 0, key: '0x19', priority: 0 },
+    '0x20': { volume: 0, key: '0x20', priority: 0 },
+    '0x21': { volume: 0, key: '0x21', priority: 0 },
+    '0x22': { volume: 0, key: '0x22', priority: 0 },
+    '0x23': { volume: 0, key: '0x23', priority: 0 },
+    '0x24': { volume: 0, key: '0x24', priority: 0 },
+}
+
 let timeouts = {
-    15: 35000,
-    16: 35000,
-    17: 35000,
 };
 
 let app = new AppClass({
@@ -145,67 +159,93 @@ for (let i in Stakes) {
 }
 
 let promise = Promise.resolve();
-let commonHeight = 1; let top = 0;
+let commonHeight = 1; let top = 0, curr = '0x01', currId = 0;
 for (height = 1; height < 100; height++) {
     let k = 0;
-    for (let i in Stakes) {
 
-        promise = promise.then(() => {
-            return new Promise((resolve, reject) => {
+    if (height == 21) {
+        promise = promise
+            .then(() => {
 
-                setTimeout(() => {
+                for (let i in Stakes) {
+                    app.roundManager.removeValidator(i);
+                }
 
-                    /*check wrong validator key *\/
-                    if (commonHeight == 53)
-                        process.exit(0);
-                    if (commonHeight == 50 || commonHeight == 51 || commonHeight == 52)
-                        i = '0x02';
-                    /* */
+                for (let i in Stakes2) {
+                    peers[i] = new app.PEER({ id: i });
+                    app.peerManager.addPeer(peers[i]);
+                    app.roundManager.addValidator(Stakes2[i].key, Stakes2[i].priority, Stakes2[i].volume);
+                }
 
-                    if (k == 0)
-                        top++;
+                curr = '0x11';
+                currId = 0
 
-                    let data = {
-                        id: '',
-                        prev: prev.id,
-                        bits: top,
-                        time: Date.now() / 1000,
-                        nonce: k,
-                        height: commonHeight,
-                        tx: [
-                            { coinbase: 1, key: Stakes[i].key, merkle: makeMerkle(Object.keys(Stakes)) }
-                        ]
-                    };
-
-                    process.stdout.write("\x1b[36m" + (commonHeight) + "\x1b[0m \x1b[33m" + Stakes[i].key + "\x1b[0m \x1b[31m" + parseFloat(data.bits).toFixed(2) + "\x1b[0m \x1b[31m" + parseFloat(data.nonce).toFixed(2) + "\x1b[0m ");
-
-                    commonHeight++;
-                    k++;
-
-                    let time = new Date().getTime();
-                    let hasErr = false;
-                    data.id = hashData(data);
-
-                    try {
-                        app.consensus.applyData(peers[i], new app.DATA(data));
-                        prev = data;
-                        process.stdout.write("\x1b[32m" + parseFloat((Date.now() - time) / 1000).toFixed(2) + "\x1b[0m " + data.id + " (ok) \n");
-                        resolve();
-                    } catch (e) {
-                        process.stdout.write("\x1b[32m 0 \x1b[0m " + data.id + " error: " + e.message + "\n");
-                        console.log(e);
-                        hasErr = true;
-                        resolve();
-                        //reject();
-                    }
-
-
-
-                }, timeouts[commonHeight] ? timeouts[commonHeight] : 1000);
-
+                return Promise.resolve();
             })
-        });
-
     }
 
+    promise = promise.then(() => {
+        return new Promise((resolve, reject) => {
+
+            setTimeout(() => {
+
+                /*check wrong validator key *\/
+                if (commonHeight == 53)
+                    process.exit(0);
+                if (commonHeight == 50 || commonHeight == 51 || commonHeight == 52)
+                    i = '0x02';
+                /* */
+
+                let datasource = Stakes;
+                if (commonHeight > 20) {
+                    datasource = Stakes2;
+                }
+
+                if (k == 0)
+                    top++;
+
+                let data = {
+                    id: '',
+                    prev: prev.id,
+                    bits: top,
+                    time: Date.now() / 1000,
+                    nonce: Object.keys(datasource).indexOf(datasource[curr]),
+                    height: commonHeight,
+                    tx: [
+                        { coinbase: 1, key: curr, merkle: makeMerkle(Object.keys(datasource)) }
+                    ]
+                };
+
+                process.stdout.write("\x1b[36m" + (commonHeight) + "\x1b[0m \x1b[33m" + curr + "\x1b[0m \x1b[31m" + parseFloat(data.bits).toFixed(2) + "\x1b[0m \x1b[31m" + parseFloat(data.nonce).toFixed(2) + "\x1b[0m ");
+
+                commonHeight++;
+                k++;
+
+                let time = new Date().getTime();
+                let hasErr = false;
+                data.id = hashData(data);
+
+                try {
+                    app.consensus.applyData(peers[curr], new app.DATA(data));
+                    prev = data;
+                    process.stdout.write("\x1b[32m" + parseFloat((Date.now() - time) / 1000).toFixed(2) + "\x1b[0m " + data.id + " (ok) \n");
+                    resolve();
+                } catch (e) {
+                    process.stdout.write("\x1b[32m 0 \x1b[0m " + data.id + " error: " + e.message + "\n");
+                    console.log(e);
+                    hasErr = true;
+                    resolve();
+                    //reject();
+                }
+
+
+                console.log('last currId', currId, 'next curr:', curr)
+                currId = (currId + 1) % (Object.keys(commonHeight > 20 ? Stakes2 : Stakes).length);
+                curr = Object.keys(commonHeight > 20 ? Stakes2 : Stakes)[currId];
+                console.log('next currId', currId, 'next curr:', curr)
+
+            }, timeouts[commonHeight] ? timeouts[commonHeight] : 1000);
+
+        })
+    });
 }

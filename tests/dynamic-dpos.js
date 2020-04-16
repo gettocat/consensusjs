@@ -32,7 +32,7 @@ let timeouts = {
 let app = new AppClass({
     "exampleddpos": {
         "extends": "ddpos",
-        "delegates": ['0x00'],
+        "delegates": ['0x01'],
         "validatorCount": 50,
         "staticDelegatesLimit": 2,
         "timeout": 30, //max block time after prev block
@@ -45,7 +45,13 @@ let app = new AppClass({
         "time": 0,
         "nonce": 0,
         "tx": [
-            { coinbase: 1, key: '0x00', merkle: '00' }
+            {
+                coinbase: 1, key: '0x01', merkle: '00', out: [
+                    { key: '0x01', amount: 0 },
+                    { key: '0x00', amount: 0 },
+                    { key: '0x02', amount: 0 },
+                ]
+            },
         ]
     }
 });
@@ -151,19 +157,22 @@ let genesis = app.config.genesis;
 let peers = [];
 let prev = genesis;
 
-app.consensus.applyData(peers['0x0'], new app.DATA(genesis));
+app.consensus.applyData(peers['0x01'], new app.DATA(genesis));
 for (let i in Stakes) {
     peers[i] = new app.PEER({ id: i });
     app.peerManager.addPeer(peers[i]);
     app.consensus.addValidator(Stakes[i].key, Stakes[i].priority, Stakes[i].volume);
 }
 
+app.roundManager.initCursor();
+console.log('next state: ', app.roundManager.getNextState());
+
 let promise = Promise.resolve();
-let commonHeight = 1; let top = 0, curr = '0x01', currId = 0;
+let commonHeight = 1; let top = 0, curr = '0x00', currId = 1;
 for (height = 1; height < 100; height++) {
     let k = 0;
 
-    if (height == 21) {
+    if (height == 18) {//start from 1, 3keys *9 height = 18iterations, then change round.
         promise = promise
             .then(() => {
 
@@ -179,7 +188,7 @@ for (height = 1; height < 100; height++) {
 
                 curr = '0x11';
                 currId = 0
-
+                app.roundManager.initCursor();
                 return Promise.resolve();
             })
     }
@@ -197,7 +206,7 @@ for (height = 1; height < 100; height++) {
                 /* */
 
                 let datasource = Stakes;
-                if (commonHeight > 20) {
+                if (commonHeight > 17) {
                     datasource = Stakes2;
                 }
 
@@ -209,13 +218,18 @@ for (height = 1; height < 100; height++) {
                     prev: prev.id,
                     bits: top,
                     time: Date.now() / 1000,
-                    nonce: Object.keys(datasource).indexOf(datasource[curr]),
+                    nonce: Object.keys(datasource).indexOf(curr),
                     height: commonHeight,
                     tx: [
-                        { coinbase: 1, key: curr, merkle: makeMerkle(Object.keys(datasource)) }
+                        { coinbase: 1, key: curr, merkle: makeMerkle(Object.keys(datasource)), out: [] }
                     ]
                 };
 
+                for (let i in datasource) {
+                    data.tx[0].out.push({ key: datasource[i].key, amount: 0 });
+                }
+
+                console.log(curr, Object.keys(datasource).indexOf(curr), 'next state: ', app.roundManager.getNextState());
                 process.stdout.write("\x1b[36m" + (commonHeight) + "\x1b[0m \x1b[33m" + curr + "\x1b[0m \x1b[31m" + parseFloat(data.bits).toFixed(2) + "\x1b[0m \x1b[31m" + parseFloat(data.nonce).toFixed(2) + "\x1b[0m ");
 
                 commonHeight++;
@@ -240,8 +254,8 @@ for (height = 1; height < 100; height++) {
 
 
                 console.log('last currId', currId, 'next curr:', curr)
-                currId = (currId + 1) % (Object.keys(commonHeight > 20 ? Stakes2 : Stakes).length);
-                curr = Object.keys(commonHeight > 20 ? Stakes2 : Stakes)[currId];
+                currId = (currId + 1) % (Object.keys(commonHeight > 17 ? Stakes2 : Stakes).length);
+                curr = Object.keys(commonHeight > 17 ? Stakes2 : Stakes)[currId];
                 console.log('next currId', currId, 'next curr:', curr)
 
             }, timeouts[commonHeight] ? timeouts[commonHeight] : 1000);

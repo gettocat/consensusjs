@@ -27,6 +27,7 @@ let Stakes2 = {
 }
 
 let timeouts = {
+    4: 10000
 };
 
 let app = new AppClass({
@@ -35,7 +36,7 @@ let app = new AppClass({
         "delegates": ['0x01'],
         "validatorCount": 50,
         "staticDelegatesLimit": 2,
-        "timeout": 30, //max block time after prev block
+        "timeout": 5, //max block time after prev block
         "pause": 1,//min block time after prev block
     },
     "genesis": {
@@ -172,7 +173,7 @@ let commonHeight = 1; let top = 0, curr = '0x00', currId = 1;
 for (height = 1; height < 100; height++) {
     let k = 0;
 
-    if (height == 18) {//start from 1, 3keys *9 height = 18iterations, then change round.
+    if (height == 17) {//start from 1, 3keys *9 height = 18iterations, then change round.
         promise = promise
             .then(() => {
 
@@ -197,22 +198,46 @@ for (height = 1; height < 100; height++) {
         return new Promise((resolve, reject) => {
 
             setTimeout(() => {
-
+                try {
+                    app.roundManager.checkTimeout();
+                } catch (e) {
+                    if (e.message == 'Block timedout, cursor changed to next validator') {
+                        let s = app.roundManager.getCurrentState();
+                        console.log('state3', s);
+                        curr = s.validators[s.cursor];
+                    }
+                }
                 /*check wrong validator key *\/
                 if (commonHeight == 53)
                     process.exit(0);
                 if (commonHeight == 50 || commonHeight == 51 || commonHeight == 52)
                     i = '0x02';
                 /* */
+                if (commonHeight == 5){//decrement validator 0x0
+                    Stakes = {//timeouts test
+                        '0x01': { volume: 1000, key: '0x01', priority: 0 },
+                        '0x02': { volume: 0, key: '0x02', priority: 0 },
+                        '0x00': { volume: 100, key: '0x00', priority: -1 },
+                    };
+                }
+
+                if (commonHeight == 8){//increment validator 0x0 back
+                    Stakes = {//timeouts test
+                        '0x01': { volume: 1000, key: '0x01', priority: 0 },
+                        '0x00': { volume: 100, key: '0x00', priority: 0 },
+                        '0x02': { volume: 0, key: '0x02', priority: 0 },
+                    };
+                }
 
                 let datasource = Stakes;
-                if (commonHeight > 17) {
+                if (commonHeight > 16) {
                     datasource = Stakes2;
                 }
 
+
                 if (k == 0)
                     top++;
-
+                    
                 let data = {
                     id: '',
                     prev: prev.id,
@@ -254,8 +279,9 @@ for (height = 1; height < 100; height++) {
 
 
                 console.log('last currId', currId, 'next curr:', curr)
-                currId = (currId + 1) % (Object.keys(commonHeight > 17 ? Stakes2 : Stakes).length);
-                curr = Object.keys(commonHeight > 17 ? Stakes2 : Stakes)[currId];
+                //currId = (currId + 1) % (Object.keys(commonHeight > 17 ? Stakes2 : Stakes).length);
+                currId = app.roundManager.getNextState().cursor;
+                curr = Object.keys(commonHeight > 16 ? Stakes2 : Stakes)[currId];
                 console.log('next currId', currId, 'next curr:', curr)
 
             }, timeouts[commonHeight] ? timeouts[commonHeight] : 1000);

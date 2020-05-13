@@ -1,6 +1,6 @@
 {
     "name": "consensusjs",
-    "version": "0.0.20",
+    "version": "0.0.21",
     "description": "Consensus module for applications",
     "main": "index.js",
     "repository": "https://github.com/gettocat/consensusjs",

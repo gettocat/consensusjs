@@ -48,8 +48,8 @@ module.exports = function (app) {
 
         applyData(peer, data) {
             let round = true;
-            if (!this.isDelegateMode())
-                round = app.roundManager.check(peer, data);
+            //if (!this.isDelegateMode())
+            round = app.roundManager.check(peer, data);
 
             if (!round)
                 throw new Error('Key of this validator havent cursor');

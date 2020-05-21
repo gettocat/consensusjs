@@ -25,8 +25,7 @@
         "email": "alex@letris.ru"
     },
     "license": "MIT",
-    "devDependencies": {
-    },
+    "devDependencies": {},
     "bugs": {
         "url": "https://github.com/gettocat/consensusjs/issues"
     }

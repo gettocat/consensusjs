@@ -16,7 +16,7 @@
         "dpos"
     ],
     "dependencies": {
-        "bn.js": "^4.11.8",
+        "bn.js": "^5.2.3",
         "sha3": "^2.0.4",
         "merkle-tools": "^1.4.0"
     },
